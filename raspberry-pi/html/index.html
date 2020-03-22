@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<!------------------------------------------------------------------------------
+ -File name: index.html
+ -Created on: 2018/06/12
+ -Author: Wuxy
+ -History:
+ -  v1.0
+ -    2019/06/30 重新排版，将辅助视频流、热像仪和图像处理
+ -  v0.9
+ -    2018/06/19 增加热像仪图像面板
+ -  v0.8
+ -    2018/06/12 增加电机速度选择下拉框
+ -    2018/06/12 重新排版，为每个视频分配了可折叠面板
+ -	v0.7
+ -    2018/06/03 文件重构
+------------------------------------------------------------------------------->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE-edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>iHammer GO! Control Client</title>
+
+<!-- Bootstrap -->
+<link href="assets/stylesheets/bootstrap.min.css" rel="stylesheet">
+<script src="assets/scripts/jquery.min.js"></script>
+<script src="assets/scripts/bootstrap.min.js"></script>
+<!-- JavaScripts -->
+<script src="scripts/keycodes.js"></script>
+<script src="scripts/protocol.js"></script>
+<script src="scripts/main.js"></script>
+
+<!-- Theme Fix -->
+<style>
+.panel-btn {
+  padding: 5px 15px;
+}
+
+.row-btn {
+  margin: 10px 0;
+}
+
+.row-btn > div {
+  padding: 0 5px;
+}
+</style>
+</head>
+
+<body>
+  <div class="row">
+    <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+      <h1 class="text-center">iHammer Go Control Client</h1>
+    </div>
+
+    <div class="col-sm-1 pull-right" style="margin-top: 20px">
+      <button type="button" class="btn btn-link btn-lg" id="btn-shutdown">
+        <span class="glyphicon glyphicon-off"></span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- .container -->
+  <div class="container">
+
+    <!-- #panel-group-main -->
+    <div class="panel-group" id="panel-group-main">
+
+      <!-- Video & Motion Panels -->
+      <div class="panel" style="border: 0; box-shadow: 0 0;">
+      <div class="row">
+
+        <div class="col-sm-6">
+
+          <!-- Remote Video Panel 1 -->
+          <div class="panel panel-default" id="panel-video-1">
+            <div class="panel-heading">
+              <h2 class="panel-title">
+                <a role="button" data-toggle="collapse" href="#panel-video-1-collapse">Video 1</a>
+              </h2>
+            </div>
+            <div class="panel-collapse collapse in" id="panel-video-1-collapse">
+              <div class="panel-body">
+                <div class="embed-responsive embed-responsive-4by3">
+                  <img class="embed-responsive-item" id="stream-video-1">
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Remote Video Panel 1 -->
+
+          <!-- Motion Control Panel -->
+          <div class="panel panel-default" id="panel-motion">
+            <div class="panel-heading">
+              <h2 class="panel-title">
+                <a role="button" data-toggle="collapse" href="#panel-motion-collapse">Motion</a>
+              </h2>
+            </div>
+            <div class="panel-collapse collapse in" id="panel-motion-collapse">
+              <div class="panel-body panel-btn">
+                <div class="row row-btn">
+                  <!-- on the left of panel -->
+                  <div class="col-xs-8 col-sm-6 col-lg-8">
+
+                    <div class="row row-btn">
+                      <div class="col-xs-offset-4 col-xs-4">
+                        <button type="button" class="btn btn-default btn-lg btn-block" id="btn-motor-forward">
+                          <span class="glyphicon glyphicon-arrow-up"></span>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="row row-btn">
+                      <div class="col-xs-4">
+                        <button type="button" class="btn btn-default btn-lg btn-block" id="btn-motor-left">
+                          <span class="glyphicon glyphicon-arrow-left"></span>
+                        </button>
+                      </div>
+                      <div class="col-xs-4">
+                        <button type="button" class="btn btn-default btn-lg btn-block" id="btn-motor-backward">
+                          <span class="glyphicon glyphicon-arrow-down"></span>
+                        </button>
+                      </div>
+                      <div class="col-xs-4">
+                        <button type="button" class="btn btn-default btn-lg btn-block" id="btn-motor-right">
+                          <span class="glyphicon glyphicon-arrow-right"></span>
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                  <!-- at the center of panel -->
+                  <div class="col-xs-4 col-sm-6 col-lg-4">
+
+                    <div class="btn-group-vertical btn-block btn-lg " role="group">
+                      <button type="button" class="btn btn-default" id="btn-motor-speed-increase">
+                        <span class="glyphicon glyphicon-menu-up"></span>
+                      </button>
+
+                      <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                          id="dropdown-motor-speed">
+                          Speed: %d
+                          <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" id="menu-motor-speed">
+                          <li><a>1</a></li>
+                          <li><a>2</a></li>
+                        </ul>
+                      </div>
+
+                      <button type="button" class="btn btn-default" id="btn-motor-speed-decrease">
+                        <span class="glyphicon glyphicon-menu-down"></span>
+                      </button>
+                    </div>
+
+                  </div>
+                  <!-- on the right of panel -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Motion Control Panel -->
+
+        </div>
+        <!-- at the center of the page -->
+        <div class="col-sm-6">
+
+          <!-- Remote Video Panel 2 -->
+          <div class="panel panel-default" id="panel-video-2">
+            <div class="panel-heading">
+              <h2 class="panel-title">
+                <a role="button" data-toggle="collapse" href="#panel-video-2-collapse">Video 2</a>
+              </h2>
+            </div>
+            <div class="panel-collapse collapse in" id="panel-video-2-collapse">
+              <div class="panel-body">
+                <div class="embed-responsive embed-responsive-4by3">
+                  <img class="embed-responsive-item" id="stream-video-2">
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Remote Video Panel 2 -->
+
+          <!-- Thermal Image Panel -->
+          <div class="panel panel-default" id="panel-thermograph">
+            <div class="panel-heading">
+              <h2 class="panel-title">
+                <a role="button" data-toggle="collapse" href="#panel-thermograph-collapse">Thermal Image</a>
+              </h2>
+            </div>
+            <div class="panel-collapse collapse" id="panel-thermograph-collapse">
+              <div class="panel-body">
+
+                <p class="btn-group" role="group">
+                  <button type="button" class="btn btn-default" id="btn-thermograph-on">On</button>
+                  <button type="button" class="btn btn-default" id="btn-thermograph-off">Off</button>
+                </p>
+
+                <div class="embed-responsive embed-responsive-4by3">
+                  <iframe class="embed-responsive-item" id="frame-thermograph"></iframe>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <!-- Thermal Image Panel -->
+
+          <!-- QR Code Reader Panel -->
+          <div class="panel panel-default" id="panel-barcode-reader">
+            <div class="panel-heading">
+              <h2 class="panel-title">
+                <a role="button" data-toggle="collapse" href="#panel-barcode-reader-collapse">QR Code Reader</a>
+              </h2>
+            </div>
+            <div class="panel-collapse collapse" id="panel-barcode-reader-collapse">
+              <div class="panel-body">
+
+                <p class="btn-group" role="group">
+                  <button type="button" class="btn btn-default" id="btn-barcode-reader-on">On</button>
+                  <button type="button" class="btn btn-default" id="btn-barcode-reader-on-zbarlight">On (zbarlight)</button>
+                  <button type="button" class="btn btn-default" id="btn-barcode-reader-off">Off</button>
+                </p>
+
+                <div class="embed-responsive embed-responsive-16by9">
+                  <img class="embed-responsive-item" id="stream-barcode-reader">
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <!-- QR Code Reader Panel -->
+
+          <!-- Motion Tracking Panel -->
+          <div class="panel panel-default" id="panel-motion-tracker">
+            <div class="panel-heading">
+              <h2 class="panel-title">
+                <a role="button" data-toggle="collapse" href="#panel-motion-tracker-collapse">Motion Tracking</a>
+              </h2>
+            </div>
+            <div class="panel-collapse collapse" id="panel-motion-tracker-collapse">
+              <div class="panel-body">
+
+                <p class="btn-group" role="group">
+                  <button type="button" class="btn btn-default" id="btn-motion-tracker-on">On</button>
+                  <button type="button" class="btn btn-default" id="btn-motion-tracker-off">Off</button>
+                </p>
+
+                <div class="embed-responsive embed-responsive-16by9">
+                  <img class="embed-responsive-item" id="stream-motion-tracker">
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <!-- Motion Tracking Panel -->
+
+          <!-- Status Panel -->
+          <div class="panel panel-default" id="panel-status">
+            <div class="panel-heading">
+              <h2 class="panel-title">
+                <a role="button" data-toggle="collapse" href="#panel-status-collapse">Status</a>
+              </h2>
+            </div>
+            <div class="panel-collapse collapse" id="panel-status-collapse">
+              <div class="panel-body">
+                
+                <p >Connection: Ready.</p>
+                <p class="text-danger">Connection: Timeout.</p>
+
+              </div>
+            </div>
+          </div>
+          <!-- Status Panel -->
+
+        </div>
+      </div>
+      </div>
+      <!-- Video & Motion Panels -->
+
+      <!-- Arm Control Panel -->
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title">
+            <a role="button" data-toggle="collapse" href="#panel-robot-arm-collapse">Robot Arm</a>
+          </h2>
+        </div>
+        <div class="panel-collapse collapse in" id="panel-robot-arm-collapse">
+          <div class="panel-body panel-btn">
+            <div class="row row-btn">
+              <!-- Row 1 -->
+
+              <div class="col-xs-2 col-md-1">
+                <div class="btn-group-vertical btn-block" role="group">
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-1-up">
+                    <span class="glyphicon glyphicon-arrow-up"></span>
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-1">
+                    1
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-1-down">
+                    <span class="glyphicon glyphicon-arrow-down"></span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-xs-2 col-md-1">
+                <div class="btn-group-vertical btn-block" role="group">
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-2-up">
+                    <span class="glyphicon glyphicon-arrow-up"></span>
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-2">
+                    2
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-2-down">
+                    <span class="glyphicon glyphicon-arrow-down"></span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-xs-2 col-md-1">
+                <div class="btn-group-vertical btn-block" role="group">
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-3-up">
+                    <span class="glyphicon glyphicon-arrow-up"></span>
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-3">
+                    3
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-3-down">
+                    <span class="glyphicon glyphicon-arrow-down"></span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-xs-2 col-md-1">
+                <div class="btn-group-vertical btn-block" role="group">
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-4-up">
+                    <span class="glyphicon glyphicon-arrow-up"></span>
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-4">
+                    4
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-4-down">
+                    <span class="glyphicon glyphicon-arrow-down"></span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-xs-2 col-md-1">
+                <div class="btn-group-vertical btn-block" role="group">
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-5-up">
+                    <span class="glyphicon glyphicon-arrow-up"></span>
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-5">
+                    5
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-5-down">
+                    <span class="glyphicon glyphicon-arrow-down"></span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-xs-2 col-md-1">
+                <div class="btn-group-vertical btn-block" role="group">
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-6-up">
+                    <span class="glyphicon glyphicon-arrow-up"></span>
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-6">
+                    6
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-6-down">
+                    <span class="glyphicon glyphicon-arrow-down"></span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-xs-2 col-md-1">
+                <div class="btn-group-vertical btn-block" role="group">
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-7-up">
+                    <span class="glyphicon glyphicon-arrow-up"></span>
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-7">
+                    7
+                  </button>
+                  <button type="button" class="btn btn-default btn-lg btn-block" id="btn-servo-7-down">
+                    <span class="glyphicon glyphicon-arrow-down"></span>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="col-xs-7 col-md-4">
+                <div id="status-servos">
+                    
+                  <!--
+                  <table><thead><tr><th>ID</th><th>Temp/°C</th><th>Vin/mV</th><th>GoalPos</th><th>CurPos/0.24°</th></tr></thead><tbody><tr><td>1</td><td>N/A</td><td>N/A</td><td>200</td><td>N/A</td></tr><tr><td>2</td><td>N/A</td><td>N/A</td><td>930</td><td>N/A</td></tr><tr><td>3</td><td>N/A</td><td>N/A</td><td>950</td><td>N/A</td></tr><tr><td>4</td><td>N/A</td><td>N/A</td><td>880</td><td>N/A</td></tr><tr><td>5</td><td>N/A</td><td>N/A</td><td>500</td><td>N/A</td></tr><tr><td>6</td><td>N/A</td><td>N/A</td><td>-32640</td><td>N/A</td></tr><tr><td>7</td><td>N/A</td><td>N/A</td><td>500</td><td>N/A</td></tr></tbody></table>
+                  -->
+
+                </div>
+                <!--<div class="embed-responsive embed-responsive-16by9">
+                  <iframe class="embed-responsive-item" src="test.html"></iframe>
+                </div>-->
+              </div>
+
+              <div class="col-xs-3 col-md-1">
+                <div class="btn-group-vertical" role="group">
+                  <button type="button" class="btn btn-default btn-lg" id="btn-servo-speed-increase">
+                    <span class="glyphicon glyphicon-menu-up"></span>
+                  </button>
+
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown"
+                      id="dropdown-servo-speed">
+                      S: 3
+                      <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" id="menu-servo-speed">
+                      <li><a>1</a></li>
+                      <li><a>2</a></li>
+                    </ul>
+                  </div>
+
+                  <button type="button" class="btn btn-default btn-lg" id="btn-servo-speed-decrease">
+                    <span class="glyphicon glyphicon-menu-down"></span>
+                  </button>
+                </div>
+              </div>
+
+            <!-- Row 1 -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Arm Control Panel -->
+
+      <!-- Other Panels -->
+      <div class="panel" style="border: 0; box-shadow: 0 0;">
+      <div class="row">
+
+        <div class="col-xs-4">
+          <!-- Old Thermal Image Panel -->
+        </div>
+
+      </div>
+      </div>
+
+    </div>
+    <!-- #panel-group-main -->
+
+  </div>
+  <!-- .container -->
+
+</body>
+</html>

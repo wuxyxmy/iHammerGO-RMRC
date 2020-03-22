@@ -1,0 +1,11 @@
+
+# VLC media player VLM command batch
+# http://www.videolan.org/vlc/
+
+new iHammerGO broadcast enabled
+
+setup iHammerGO input "dshow://"
+setup iHammerGO output #transcode{vcodec=h264,scale=自动,acodec=mpga,ab=128,channels=2,samplerate=44100}:rtp{sdp=rtsp://:8554/}
+setup iHammerGO option dshow-vdev=none
+
+control iHammerGO play
